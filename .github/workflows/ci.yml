@@ -13,7 +13,7 @@ env:
 jobs:
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     outputs:
       image-tag: ${{ env.IMAGE_TAG }}
@@ -62,7 +62,7 @@ jobs:
       - name: Configure kubeconfig
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
 
       - name: Deploy with Helm
         run: |
