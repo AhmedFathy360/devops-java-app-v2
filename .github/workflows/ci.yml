@@ -9,6 +9,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   RELEASE_NAME: ci-java-app
   NAMESPACE: production
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
 
@@ -63,6 +64,7 @@ jobs:
         run: |
           mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
 
 
       - name: Clone Helm Repository
