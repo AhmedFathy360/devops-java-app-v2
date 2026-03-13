@@ -46,35 +46,37 @@ jobs:
 
   deploy:
 
-    needs: build
+  needs: build
+  runs-on: self-hosted
 
-    runs-on: self-hosted
+  steps:
 
-    steps:
+    - uses: actions/checkout@v4
 
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    - name: Setup Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.15.0
 
-      - name: Setup Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.15.0
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
+        chmod 600 ~/.kube/config
 
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
+    - name: Clone Helm repo
+      run: |
+        git clone https://github.com/AhmedFathy360/devops-java-helm-v2..git \
+          --depth 1 --branch main ./helm-repo
 
+    - name: Deploy with Helm
+      run: |
+        helm upgrade --install $RELEASE_NAME ./helm-repo \
+          --namespace $NAMESPACE \
+          --create-namespace \
+          --set image.repository=$IMAGE_NAME \
+          --set image.tag=$IMAGE_TAG
 
-      - name: Clone Helm Repository
-        run: |
-          git clone https://github.com/AhmedFathy360/devops-java-helm-v2..git --depth 1 --branch main ./helm-repo
-
-      - name: Deploy Application via Helm
-        run: |
-          helm upgrade --install java-app ./helm-repo \
-            --namespace dev \
-            --create-namespace \
-            --set image.repository=perdita997/devops-java-app \
-            --set image.tag=${{ github.sha }}
+    - name: Verify rollout
+      run: |
+        kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE
