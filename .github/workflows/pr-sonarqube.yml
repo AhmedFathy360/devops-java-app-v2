@@ -1,4 +1,4 @@
-name: PR Qality Checks - SonarQube
+name: PR Quality Checks - SonarQube
 
 on:
   pull_request:
