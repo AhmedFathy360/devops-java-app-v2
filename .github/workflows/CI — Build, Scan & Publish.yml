@@ -59,7 +59,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-java-app-v2:${{ needs.build.outputs.image_tag }}
 
       - name: Trivy Scan
-        uses: aquasecurity/trivy-action@0.31.0
+        uses: aquasecurity/trivy-action@@master
         with:
           image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/devops-java-app-v2:${{ needs.build.outputs.image_tag }}
           format: 'table'
@@ -97,7 +97,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/devops-java-app-v2:${{ needs.build.outputs.image_tag }}
             ${{ secrets.DOCKERHUB_USERNAME }}/devops-java-app-v2:latest
-  
+
   update-helm:
     name: Update Helm Chart Tag
     runs-on: self-hosted
