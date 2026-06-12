@@ -101,13 +101,13 @@ jobs:
   update-helm:
     name: Update Helm Chart Tag
     runs-on: self-hosted
-    needs: push
+    needs: [build, push]
 
     steps:
       - name: Checkout Helm repo
         uses: actions/checkout@v4
         with:
-          repository: AhmedFathy360/devops-java-helm-v2
+          repository: AhmedFathy360/devops-java-helm-v2.
           token: ${{ secrets.HELM_REPO_TOKEN }}
           path: helm-repo
 
