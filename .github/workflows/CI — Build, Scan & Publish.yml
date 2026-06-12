@@ -102,7 +102,7 @@ jobs:
   update-helm:
     name: Update Helm Chart Tag
     runs-on: self-hosted
-    needs: push
+    needs: [build, push]
 
     steps:
       - name: Checkout Helm repo
