@@ -21,6 +21,9 @@ FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
+# Update OS packages to patch known vulnerabilities
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 # Copy jar from builder
 COPY --from=builder /build/target/*.jar app.jar
 
