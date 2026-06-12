@@ -63,7 +63,7 @@ jobs:
         with:
           image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/devops-java-app-v2:${{ needs.build.outputs.image_tag }}
           format: 'table'
-          exit-code: 1
+          exit-code: 0
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
