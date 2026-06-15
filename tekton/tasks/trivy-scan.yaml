@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: trivy-scan
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: image
+      type: string
+      description: Full image reference e.g. myuser/app:a1b2c3d
+    - name: severity
+      type: string
+      default: "CRITICAL,HIGH"
+  workspaces:
+    - name: source
+      description: The source code workspace
+  steps:
+    - name: trivy-scan
+      image: aquasec/trivy:latest
+      script: |
+        #!/bin/sh
+        set -e
+        trivy image \
+          --exit-code 0 \
+          --severity $(params.severity) \
+          --vuln-type os,library \
+          --ignore-unfixed \
+          $(params.image)

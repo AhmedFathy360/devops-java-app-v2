@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: update-helm-tag
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: helm-repo-url
+      type: string
+      default: "https://github.com/AhmedFathy360/devops-java-helm-v2..git"
+    - name: image-tag
+      type: string
+    - name: git-user-email
+      type: string
+      default: "tekton-bot@example.com"
+
+  workspaces:
+    - name: helm-source
+    - name: git-credentials
+      description: GitHub PAT for pushing back to the Helm repo
+
+  steps:
+    - name: clone-update-push
+      image: alpine/git:latest
+      script: |
+        #!/bin/sh
+        set -e
+        
+        # 0. Setup git credentials first
+        cp $(workspaces.git-credentials.path)/.git-credentials $HOME/.git-credentials
+        git config --global credential.helper store
+        git config --global user.name "AhmedFathy360"
+        git config --global user.email $(params.git-user-email)
+
+        # 1. Clone the helm repo
+        git clone $(params.helm-repo-url) ./helm-repo
+
+        # 2. Update the tag
+        sed -i "s|tag:.*|tag: \"$(params.image-tag)\"|" ./helm-repo/values.yaml
+
+        # 3. Commit and push
+        cd helm-repo
+        git add values.yaml
+        git commit -m "chore: bump image tag to $(params.image-tag)"
+        git push
