@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: docker-build-push
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: image
+      type: string
+      description: Full image name e.g. myuser/devops-java-app-v2
+    - name: image-tag
+      type: string
+      description: Image tag e.g. a1b2c3d
+  workspaces:
+    - name: source
+    - name: dockerconfig
+      description: Docker Hub credentials secret mounted here
+  steps:
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:latest
+      args:
+        - --dockerfile=$(workspaces.source.path)/Dockerfile
+        - --context=dir://$(workspaces.source.path)
+        - --destination=$(params.image):$(params.image-tag)
+        - --destination=$(params.image):latest
+      env:
+        - name: DOCKER_CONFIG
+          value: $(workspaces.dockerconfig.path)

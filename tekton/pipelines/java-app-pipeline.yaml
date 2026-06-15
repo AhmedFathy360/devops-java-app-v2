@@ -1,0 +1,109 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: java-app-pipeline
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: git-url
+      type: string
+    - name: git-revision
+      type: string
+      default: "main"
+    - name: image
+      type: string
+    - name: image-tag
+      type: string
+    - name: release-name
+      type: string
+      default: "devops-java-app"
+    - name: deploy-namespace
+      type: string
+      default: "default"
+  workspaces:
+    - name: source
+    - name: helm-source
+    - name: maven-cache
+    - name: dockerconfig
+    - name: git-credentials
+  tasks:
+    - name: clone-source
+      taskRef:
+        kind: Task
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output        # git-clone calls its workspace "output"
+          workspace: source   # maps to our pipeline workspace "source"
+
+    - name: maven-build
+      taskRef:
+        kind: Task
+        name: maven-build
+      runAfter: [ clone-source ]  # which task must finish first?
+      params:
+        - name: maven-goals
+          value: "clean package"
+      workspaces:
+        - name: source
+          workspace: source
+    - name: docker-build-push
+      taskRef:
+        kind: Task
+        name: docker-build-push
+      runAfter: [ maven-build ]
+      params:
+        - name: image
+          value: $(params.image)
+        - name: image-tag
+          value: $(params.image-tag)
+      workspaces:
+        - name: source
+          workspace: source
+        - name: dockerconfig
+          workspace: dockerconfig
+    - name: trivy-scan
+      taskRef:
+        kind: Task
+        name: trivy-scan
+      runAfter: [ docker-build-push ]
+      params:
+        - name: image
+          value: $(params.image):$(params.image-tag)
+      workspaces:
+        - name: source
+          workspace: source
+    - name: update-helm-tag
+      taskRef:
+        kind: Task
+        name: update-helm-tag
+      runAfter: [ trivy-scan ]
+      params:
+        - name: image-tag
+          value: $(params.image-tag)
+      workspaces:
+        - name: helm-source
+          workspace: helm-source
+        - name: git-credentials
+          workspace: git-credentials
+    - name: helm-deploy
+      taskRef:
+        kind: Task
+        name: helm-deploy
+      runAfter: [ update-helm-tag ]
+      params:
+        - name: image
+          value: $(params.image)
+        - name: image-tag
+          value: $(params.image-tag)
+        - name: release-name
+          value: $(params.release-name)
+        - name: namespace
+          value: $(params.deploy-namespace)
+      workspaces:
+        - name: helm-source
+          workspace: helm-source

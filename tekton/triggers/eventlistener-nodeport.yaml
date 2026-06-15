@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: el-github-push-listener-nodeport
+  namespace: tekton-pipelines
+spec:
+  type: NodePort
+  selector:
+    eventlistener: github-push-listener
+  ports:
+    - name: http-listener
+      port: 8080
+      targetPort: 8080
+      nodePort: 32000
