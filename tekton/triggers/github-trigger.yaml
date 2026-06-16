@@ -103,7 +103,6 @@ spec:
 
   template:
     ref: java-app-trigger-template
-
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
