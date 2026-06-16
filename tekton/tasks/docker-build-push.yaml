@@ -23,7 +23,6 @@ spec:
         - --context=dir://$(workspaces.source.path)
         - --destination=$(params.image):$(params.image-tag)
         - --destination=$(params.image):latest
-        - --registry-config=$(workspaces.dockerconfig.path)/.dockerconfigjson
       env:
         - name: DOCKER_CONFIG
           value: $(workspaces.dockerconfig.path)

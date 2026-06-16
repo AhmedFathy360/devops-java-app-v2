@@ -65,6 +65,9 @@ spec:
           - name: dockerconfig
             secret:
               secretName: dockerhub-credentials
+              items:
+                - key: .dockerconfigjson
+                  path: .docker/config.json
 
           - name: git-credentials
             secret:
