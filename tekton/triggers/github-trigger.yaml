@@ -40,7 +40,7 @@ spec:
           - name: image-tag
             value: $(tt.params.image-tag)
           - name: image
-            value: "AhmedFathy360/devops-java-app-v2"
+            value: "perdita997/devops-java-app-v2"
         workspaces:
           - name: source
             volumeClaimTemplate:

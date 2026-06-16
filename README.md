@@ -27,3 +27,4 @@ A Spring Boot application used to demonstrate a full DevSecOps CI/CD pipeline.
 - Trivy (vulnerability scanning)
 - GitHub Actions 
  
+ 
