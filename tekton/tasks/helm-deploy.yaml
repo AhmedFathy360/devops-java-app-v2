@@ -26,7 +26,7 @@ spec:
       script: |
         #!/bin/sh
         set -e
-        helm upgrade --install $(params.release-name) ./helm-repo \
+        helm upgrade --install $(params.release-name) $(workspaces.helm-source.path)/helm-repo \
           --namespace $(params.namespace) \
           --create-namespace \
           --set image.repository=$(params.image) \
