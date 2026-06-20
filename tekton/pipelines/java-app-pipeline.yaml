@@ -24,7 +24,6 @@ spec:
     - name: source
     - name: helm-source
     - name: maven-cache
-    - name: dockerconfig
     - name: git-credentials
   tasks:
     - name: clone-source
@@ -37,20 +36,21 @@ spec:
         - name: revision
           value: $(params.git-revision)
       workspaces:
-        - name: output        # git-clone calls its workspace "output"
-          workspace: source   # maps to our pipeline workspace "source"
+        - name: output
+          workspace: source
 
     - name: maven-build
       taskRef:
         kind: Task
         name: maven-build
-      runAfter: [ clone-source ]  # which task must finish first?
+      runAfter: [ clone-source ]
       params:
         - name: maven-goals
           value: "clean package"
       workspaces:
         - name: source
           workspace: source
+
     - name: docker-build-push
       taskRef:
         kind: Task
@@ -64,8 +64,7 @@ spec:
       workspaces:
         - name: source
           workspace: source
-        - name: dockerconfig
-          workspace: dockerconfig
+
     - name: trivy-scan
       taskRef:
         kind: Task
@@ -77,6 +76,7 @@ spec:
       workspaces:
         - name: source
           workspace: source
+
     - name: update-helm-tag
       taskRef:
         kind: Task
@@ -90,6 +90,7 @@ spec:
           workspace: helm-source
         - name: git-credentials
           workspace: git-credentials
+
     - name: helm-deploy
       taskRef:
         kind: Task

@@ -13,8 +13,6 @@ spec:
       description: Image tag e.g. a1b2c3d
   workspaces:
     - name: source
-    - name: dockerconfig
-      description: Docker Hub credentials secret mounted here
   steps:
     - name: build-and-push
       image: gcr.io/kaniko-project/executor:latest
@@ -25,4 +23,14 @@ spec:
         - --destination=$(params.image):latest
       env:
         - name: DOCKER_CONFIG
-          value: $(workspaces.dockerconfig.path)
+          value: /kaniko/.docker
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: dockerhub-credentials
+        items:
+          - key: .dockerconfigjson
+            path: config.json
