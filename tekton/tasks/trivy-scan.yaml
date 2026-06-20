@@ -21,8 +21,9 @@ spec:
         #!/bin/sh
         set -e
         trivy image \
-          --exit-code 0 \
+          --exit-code 1 \
           --severity $(params.severity) \
           --vuln-type os,library \
           --ignore-unfixed \
+          --timeout 60m \
           $(params.image)
