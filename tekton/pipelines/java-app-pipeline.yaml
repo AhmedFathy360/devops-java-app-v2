@@ -70,6 +70,7 @@ spec:
         kind: Task
         name: trivy-scan
       runAfter: [ docker-build-push ]
+      timeout: "60m"
       params:
         - name: image
           value: $(params.image):$(params.image-tag)

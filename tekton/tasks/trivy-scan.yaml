@@ -25,4 +25,5 @@ spec:
           --severity $(params.severity) \
           --vuln-type os,library \
           --ignore-unfixed \
+          --timeout 60m \
           $(params.image)
