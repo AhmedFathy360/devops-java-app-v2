@@ -20,9 +20,15 @@ spec:
   workspaces:
     - name: helm-source
   steps:
+    - name: clone-helm-repo
+      image: alpine/git:latest
+      script: |
+        #!/bin/sh
+        set -e
+        git clone https://github.com/AhmedFathy360/devops-java-helm-v2..git \
+          $(workspaces.helm-source.path)/helm-repo
     - name: helm-deploy
       image: alpine/helm:3.9.0
-      workingDir: $(workspaces.helm-source.path)
       script: |
         #!/bin/sh
         set -e
