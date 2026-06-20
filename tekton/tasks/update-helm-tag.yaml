@@ -22,6 +22,7 @@ spec:
   steps:
     - name: clone-update-push
       image: alpine/git:latest
+      workingDir: $(workspaces.helm-source.path)
       script: |
         #!/bin/sh
         set -e
