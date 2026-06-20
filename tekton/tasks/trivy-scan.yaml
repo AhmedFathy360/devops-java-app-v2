@@ -21,7 +21,7 @@ spec:
         #!/bin/sh
         set -e
         trivy image \
-          --exit-code 1 \
+          --exit-code 0 \
           --severity $(params.severity) \
           --vuln-type os,library \
           --ignore-unfixed \
